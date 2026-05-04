@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx shadcn@latest init -d -y)",
+      "Bash(npm install *)",
+      "Bash(npx shadcn@latest add card dialog input tabs textarea scroll-area -y)",
+      "Bash(npx tsc *)",
+      "Bash(npm show *)",
+      "Bash(node -e \"const { Toolbar } = require\\('@base-ui/react'\\); console.log\\(Object.keys\\(Toolbar\\)\\)\")",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "PowerShell(gh auth status 2>&1)",
+      "PowerShell(git config --global credential.helper)",
+      "PowerShell(git config credential.helper)",
+      "Bash(npm run *)"
+    ]
+  }
+}
