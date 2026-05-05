@@ -10,22 +10,16 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { Project } from "@/lib/mock-projects"
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-}
+import type { ProjectItem } from "@/lib/projects"
 
 interface CreateProjectDialogProps {
   open: boolean
   onClose: () => void
-  onSubmit: (name: string) => void
+  onSubmit: () => void
   name: string
   setName: (name: string) => void
+  roomId: string
+  isLoading: boolean
 }
 
 export function CreateProjectDialog({
@@ -34,9 +28,9 @@ export function CreateProjectDialog({
   onSubmit,
   name,
   setName,
+  roomId,
+  isLoading,
 }: CreateProjectDialogProps) {
-  const slug = toSlug(name)
-
   return (
     <Dialog open={open} onOpenChange={(next: boolean) => { if (!next) onClose() }}>
       <DialogContent showCloseButton>
@@ -54,16 +48,16 @@ export function CreateProjectDialog({
             autoFocus
           />
           <p className="min-h-4 text-xs text-muted-foreground">
-            {name && (
+            {roomId && (
               <>
-                Slug: <span className="font-mono">{slug || "—"}</span>
+                Room ID: <span className="font-mono">{roomId}</span>
               </>
             )}
           </p>
         </div>
         <DialogFooter showCloseButton>
-          <Button disabled={!name.trim()} onClick={() => onSubmit(name)}>
-            Create Project
+          <Button disabled={!name.trim() || isLoading} onClick={onSubmit}>
+            {isLoading ? "Creating…" : "Create Project"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -74,10 +68,11 @@ export function CreateProjectDialog({
 interface RenameProjectDialogProps {
   open: boolean
   onClose: () => void
-  onSubmit: (name: string) => void
-  project: Project | null
+  onSubmit: () => void
+  project: ProjectItem | null
   name: string
   setName: (name: string) => void
+  isLoading: boolean
 }
 
 export function RenameProjectDialog({
@@ -87,10 +82,11 @@ export function RenameProjectDialog({
   project,
   name,
   setName,
+  isLoading,
 }: RenameProjectDialogProps) {
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter" && name.trim()) {
-      onSubmit(name)
+    if (e.key === "Enter" && name.trim() && !isLoading) {
+      onSubmit()
     }
   }
 
@@ -113,8 +109,8 @@ export function RenameProjectDialog({
           autoFocus
         />
         <DialogFooter showCloseButton>
-          <Button disabled={!name.trim()} onClick={() => onSubmit(name)}>
-            Rename
+          <Button disabled={!name.trim() || isLoading} onClick={onSubmit}>
+            {isLoading ? "Renaming…" : "Rename"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -126,7 +122,8 @@ interface DeleteProjectDialogProps {
   open: boolean
   onClose: () => void
   onSubmit: () => void
-  project: Project | null
+  project: ProjectItem | null
+  isLoading: boolean
 }
 
 export function DeleteProjectDialog({
@@ -134,6 +131,7 @@ export function DeleteProjectDialog({
   onClose,
   onSubmit,
   project,
+  isLoading,
 }: DeleteProjectDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(next: boolean) => { if (!next) onClose() }}>
@@ -147,8 +145,8 @@ export function DeleteProjectDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter showCloseButton>
-          <Button variant="destructive" onClick={onSubmit}>
-            Delete Project
+          <Button variant="destructive" disabled={isLoading} onClick={onSubmit}>
+            {isLoading ? "Deleting…" : "Delete Project"}
           </Button>
         </DialogFooter>
       </DialogContent>

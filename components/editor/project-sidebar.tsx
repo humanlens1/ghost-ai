@@ -5,15 +5,15 @@ import { Pencil, Plus, Trash2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-import type { Project } from "@/lib/mock-projects"
+import type { ProjectItem } from "@/lib/projects"
 
 interface ProjectSidebarProps {
   isOpen: boolean
   onClose: () => void
-  projects: Project[]
+  projects: ProjectItem[]
   onCreateProject: () => void
-  onRenameProject: (project: Project) => void
-  onDeleteProject: (project: Project) => void
+  onRenameProject: (project: ProjectItem) => void
+  onDeleteProject: (project: ProjectItem) => void
 }
 
 function ProjectItem({
@@ -21,7 +21,7 @@ function ProjectItem({
   onRename,
   onDelete,
 }: {
-  project: Project
+  project: ProjectItem
   onRename: () => void
   onDelete: () => void
 }) {
@@ -63,8 +63,8 @@ export function ProjectSidebar({
   onRenameProject,
   onDeleteProject,
 }: ProjectSidebarProps) {
-  const myProjects = projects.filter((p: Project) => p.owned)
-  const sharedProjects = projects.filter((p: Project) => !p.owned)
+  const myProjects = projects.filter((p: ProjectItem) => p.owned)
+  const sharedProjects = projects.filter((p: ProjectItem) => !p.owned)
 
   return (
     <>
