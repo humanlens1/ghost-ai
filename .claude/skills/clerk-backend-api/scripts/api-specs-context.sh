@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 
 # Fetches all available BAPI spec versions, determines the latest,
 # and extracts tags from it. Output is used as skill context.
@@ -22,6 +22,11 @@ versions=$(curl -s "$API_URL" | node -e "
 ")
 
 latest=$(echo "$versions" | tail -1)
+
+if [[ -z "$latest" ]]; then
+  echo "ERROR: No API spec versions found. Check that API_URL returns entries matching YYYY-MM-DD.yml pattern." >&2
+  exit 1
+fi
 
 echo "AVAILABLE VERSIONS: $(echo "$versions" | tr '\n' ' ')"
 echo "LATEST VERSION: $latest"

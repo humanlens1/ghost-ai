@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # extract-tag-endpoints.sh
 #
 # Extracts all endpoints for a given tag from an OpenAPI YAML spec (stdin),

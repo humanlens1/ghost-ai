@@ -1,0 +1,1 @@
+Sometimes when I login to local host and put in my credentials, it seems that I land on a page that is just "rendering". However, if I refresh the page it takes me into the application. This happens on all subsequent logins.

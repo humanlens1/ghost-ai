@@ -45,6 +45,16 @@ const { error } = await signUp.sso({
 const { error } = await signUp.web3({ strategy: 'web3_solana_signature' })
 ```
 
+### Phone OTP (Transfer Flow)
+
+```typescript
+const { error } = await signUp.create({ phoneNumber: '+1234567890' })
+
+// Then verify with:
+const { error } = await signUp.verifications.sendPhoneCode()
+const { error } = await signUp.verifications.verifyPhoneCode({ code: '123456' })
+```
+
 ### Update (add fields to existing sign-up)
 
 Use `update()` to add optional fields (name, metadata, legal acceptance, locale) to an existing sign-up before finalization.
@@ -167,7 +177,7 @@ export default function SignUpPage() {
     const phoneNumber = formData.get('phoneNumber') as string
 
     // For email OTP: change create({ phoneNumber }) to create({ emailAddress })
-    const error = await signUp.create({ phoneNumber })
+    const { error } = await signUp.create({ phoneNumber })
 
     // For email OTP: change sendPhoneCode() to sendEmailCode()
     if (!error) await signUp.verifications.sendPhoneCode()
@@ -218,7 +228,7 @@ export default function SignUpPage() {
             <label htmlFor="code">Code</label>
             <input id="code" name="code" type="text" />
           </div>
-          {errors.fields.code && <p>{errors.fields.code.message}</p>}
+          {errors?.fields?.code && <p>{errors?.fields?.code?.message}</p>}
           <button type="submit" disabled={fetchStatus === 'fetching'}>
             Verify
           </button>
@@ -237,7 +247,7 @@ export default function SignUpPage() {
         <div>
           <label htmlFor="phoneNumber">Phone number</label>
           <input id="phoneNumber" name="phoneNumber" type="tel" />
-          {errors.fields.phoneNumber && <p>{errors.fields.phoneNumber.message}</p>}
+          {errors?.fields?.phoneNumber && <p>{errors?.fields?.phoneNumber?.message}</p>}
         </div>
         <button type="submit" disabled={fetchStatus === 'fetching'}>
           Continue
