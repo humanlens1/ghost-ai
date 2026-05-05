@@ -15,7 +15,8 @@
       "PowerShell(git config credential.helper)",
       "Bash(npm run *)",
       "Bash(npx next *)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(npx prisma *)"
     ]
   }
 }

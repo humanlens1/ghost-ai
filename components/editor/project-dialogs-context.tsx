@@ -2,12 +2,12 @@
 
 import { createContext, useContext } from "react"
 
-import type { Project } from "@/lib/mock-projects"
+import type { ProjectItem } from "@/lib/projects"
 
 interface ProjectDialogsContextValue {
   openCreate: () => void
-  openRename: (project: Project) => void
-  openDelete: (project: Project) => void
+  openRename: (project: ProjectItem) => void
+  openDelete: (project: ProjectItem) => void
 }
 
 export const ProjectDialogsContext =
