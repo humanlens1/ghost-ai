@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # extract-endpoint-detail.sh
 #
 # Extracts full details for a specific endpoint from an OpenAPI YAML spec (stdin),
