@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 
 import { useProjectActions } from "@/hooks/use-project-actions"
 import type { ProjectItem } from "@/lib/projects"
@@ -13,6 +13,9 @@ import {
   DeleteProjectDialog,
 } from "./project-dialogs"
 import { ShareDialog } from "./share-dialog"
+import { CanvasWrapper } from "./canvas-wrapper"
+import { StarterTemplatesModal } from "./starter-templates-modal"
+import { TemplateImportContext, type CanvasTemplate, type ImportFn } from "./starter-templates"
 
 interface WorkspaceShellProps {
   project: { id: string; name: string }
@@ -25,9 +28,17 @@ export function WorkspaceShell({ project, projects, activeProjectId, isOwner }: 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isAiPanelOpen, setIsAiPanelOpen] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
+  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false)
+  const importRef = useRef<ImportFn | null>(null)
   const actions = useProjectActions()
 
+  function handleImport(template: CanvasTemplate) {
+    setIsTemplatesOpen(false)
+    importRef.current?.(template)
+  }
+
   return (
+    <TemplateImportContext.Provider value={importRef}>
     <ProjectDialogsContext.Provider
       value={{
         openCreate: actions.openCreate,
@@ -43,6 +54,7 @@ export function WorkspaceShell({ project, projects, activeProjectId, isOwner }: 
         onAiPanelToggle={() => setIsAiPanelOpen((prev) => !prev)}
         isOwner={isOwner}
         onShareOpen={() => setIsShareOpen(true)}
+        onTemplatesOpen={() => setIsTemplatesOpen(true)}
       />
 
       <ProjectSidebar
@@ -57,8 +69,8 @@ export function WorkspaceShell({ project, projects, activeProjectId, isOwner }: 
 
       <div className="flex h-screen pt-12">
         {/* Canvas area */}
-        <main className="flex flex-1 items-center justify-center bg-base">
-          <p className="text-sm text-copy-muted">Canvas coming soon</p>
+        <main className="relative flex-1 overflow-hidden">
+          <CanvasWrapper roomId={activeProjectId} />
         </main>
 
         {/* AI sidebar placeholder */}
@@ -105,6 +117,12 @@ export function WorkspaceShell({ project, projects, activeProjectId, isOwner }: 
         projectId={project.id}
         isOwner={isOwner}
       />
+      <StarterTemplatesModal
+        open={isTemplatesOpen}
+        onClose={() => setIsTemplatesOpen(false)}
+        onImport={handleImport}
+      />
     </ProjectDialogsContext.Provider>
+    </TemplateImportContext.Provider>
   )
 }
