@@ -1,7 +1,7 @@
 "use client"
 
 import { UserButton } from "@clerk/nextjs"
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { Ghost, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -31,11 +31,19 @@ export function EditorNavbar({
           size="icon"
           onClick={onSidebarToggle}
           aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+          className="text-copy-muted hover:text-foreground"
         >
           {isSidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
         </Button>
       </div>
-      <div className="flex-1" />
+
+      <div className="flex flex-1 items-center justify-center gap-2">
+        <Ghost className="h-4 w-4 text-brand" aria-hidden="true" />
+        <span className="text-sm font-semibold tracking-tight text-foreground">
+          Ghost<span className="text-brand">AI</span>
+        </span>
+      </div>
+
       <div className="flex items-center px-3">
         <UserButton />
       </div>
