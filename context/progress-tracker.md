@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- 07-wire-editor-home (complete)
+- 09-share-dialog (complete)
 
 ## Current Goal
 
-- Wire the editor home sidebar and dialogs to the real project API.
+- Add sharing to the workspace so project owners can invite collaborators by email.
 
 ## Completed
 
@@ -19,6 +19,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - 05-prisma: Project and ProjectCollaborator models in prisma/models/project.prisma. Prisma client singleton in lib/prisma.ts branches on DATABASE_URL (prisma+postgres:// → accelerateUrl, else PrismaPg adapter). Migration applied. Client generated to app/generated/prisma/.
 - 06-project-apis: REST route handlers for GET /api/projects and POST /api/projects in app/api/projects/route.ts; PATCH and DELETE /api/projects/[projectId] in app/api/projects/[projectId]/route.ts. Auth via @clerk/nextjs/server auth(). 401 for unauthenticated, 403 for non-owner mutations. POST defaults missing name to "Untitled Project". npm run build passes.
 - 07-wire-editor-home: Editor home page converted to server component. Layout fetches owned + shared projects server-side via getProjectsForUser() (lib/data/projects.ts) and passes them to EditorShell. useProjectActions hook (hooks/use-project-actions.ts) handles create/rename/delete via REST API + router.refresh()/push(). Create dialog shows room ID preview (slug + short suffix); project ID and room ID stay aligned. POST /api/projects accepts optional custom id. npm run build passes.
+- 08-editor-workspace-shell: /editor/[roomId] server component in app/(workspace) route group (own layout, no EditorShell). lib/project-access.ts provides getAuthIdentity() and checkProjectAccess(). Unauthenticated users redirect to /sign-in; missing/unauthorized projects render AccessDenied. WorkspaceShell (client) owns sidebar + AI panel state; WorkspaceNavbar shows project name, Share button (disabled), AI toggle, UserButton. ProjectSidebar updated with optional activeProjectId prop that highlights the current room. npm run build passes, no TypeScript errors.
+- 09-share-dialog: ShareDialog component (components/editor/share-dialog.tsx) opens from the Share button in WorkspaceNavbar. Owners can invite by email (POST /api/projects/[projectId]/collaborators), remove collaborators (DELETE /api/projects/[projectId]/collaborators/[email]), and copy the project link with temporary "Copied!" feedback. Collaborators see a read-only list. Collaborator names and avatars are enriched via Clerk Backend API (clerkClient().users.getUserList); falls back to email-only when no Clerk user found. checkProjectAccess() in lib/project-access.ts now returns isOwner. next.config.ts adds remotePatterns for img.clerk.com and images.clerk.dev. npm run build passes.
 
 ## In Progress
 
@@ -26,7 +28,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- 08: Add the next planned feature unit here.
+- 10: Add the next planned feature unit here.
 
 ## Open Questions
 
@@ -39,6 +41,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - useProjectDialogs hook owns all dialog/form/loading state; used in EditorShell and shared to child pages via ProjectDialogsContext.
 - ProjectSidebar receives dialog open handlers as props (onCreateProject, onRenameProject, onDeleteProject).
 - Mobile sidebar backdrop is a fixed full-screen div (md:hidden) rendered before the aside element.
+- Workspace route lives in app/(workspace) route group so it has no EditorShell wrapper; root layout (ClerkProvider) still applies.
+- WorkspaceShell is a client component that owns isSidebarOpen + isAiPanelOpen state; it reuses ProjectSidebar and dialog infrastructure from EditorShell.
 
 ## Session Notes
 
@@ -53,3 +57,13 @@ Update this file whenever the current phase, active feature, or implementation s
 - Project actions hook: `hooks/use-project-actions.ts` — useProjectActions() manages dialog state + async mutations; generates roomId (slug + shortSuffix) for create.
 - Editor home: `app/(editor)/editor/page.tsx` is a server component; interactive button extracted to `components/editor/editor-home-content.tsx` (client).
 - Editor layout: `app/(editor)/layout.tsx` is async server component; fetches projects and passes to EditorShell as ownedProjects/sharedProjects props.
+- Access helpers: `lib/project-access.ts` — getAuthIdentity() (Clerk userId + primary email), checkProjectAccess(projectId, identity) (owner or collaborator check via Prisma).
+- AccessDenied component: `components/editor/access-denied.tsx` — centered lock icon, message, link back to /editor.
+- Workspace navbar: `components/editor/workspace-navbar.tsx` — shows project name, disabled Share button, AI panel toggle, UserButton.
+- Workspace shell: `components/editor/workspace-shell.tsx` — client, owns sidebar + AI panel state, renders WorkspaceNavbar + ProjectSidebar + canvas placeholder + AI sidebar placeholder.
+- Workspace page: `app/(workspace)/editor/[roomId]/page.tsx` — server component; redirects unauth to /sign-in, shows AccessDenied for missing/unauthorized projects, renders WorkspaceShell with project + projects + activeProjectId + isOwner.
+- ProjectSidebar: added optional activeProjectId prop; matching project item gets bg-muted/70 highlight.
+- Share dialog: `components/editor/share-dialog.tsx` — Dialog for sharing; owners see invite input + remove buttons; collaborators see read-only list; copy-link with "Copied!" feedback.
+- Collaborators API: `app/api/projects/[projectId]/collaborators/route.ts` (GET list + POST invite), `app/api/projects/[projectId]/collaborators/[email]/route.ts` (DELETE remove). Ownership enforced server-side for mutating operations.
+- Access helper updated: `lib/project-access.ts` checkProjectAccess() now returns isOwner boolean.
+- Image config: `next.config.ts` remotePatterns for img.clerk.com + images.clerk.dev.

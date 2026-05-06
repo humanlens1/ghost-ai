@@ -20,7 +20,10 @@ export async function getProjectsForUser(): Promise<{
 
   const sharedRaw = email
     ? await prisma.project.findMany({
-        where: { collaborators: { some: { email } } },
+        where: {
+          collaborators: { some: { email } },
+          NOT: { ownerId: userId },
+        },
         orderBy: { createdAt: 'desc' },
         select: { id: true, name: true },
       })

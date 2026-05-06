@@ -29,12 +29,12 @@
     --color-secondary:          #1e1e23;
     --color-secondary-foreground: #c0c0cc;
     --color-muted:              #18181c;
-    --color-muted-foreground:   #808090;
+    --color-muted-foreground:   #9a9aaa;
     --color-accent:             rgba(0, 200, 212, 0.12);
     --color-accent-foreground:  #00c8d4;
     --color-destructive:        #ff4d4f;
-    --color-border:             #2a2a30;
-    --color-input:              #2a2a30;
+    --color-border:             #313139;
+    --color-input:              #313139;
     --color-ring:               #00c8d4;
     --color-chart-1:            #00c8d4;
     --color-chart-2:            #6457f9;
@@ -47,7 +47,7 @@
     --color-sidebar-primary-foreground: #080809;
     --color-sidebar-accent:     rgba(0, 200, 212, 0.12);
     --color-sidebar-accent-foreground: #00c8d4;
-    --color-sidebar-border:     #2a2a30;
+    --color-sidebar-border:     #313139;
     --color-sidebar-ring:       #00c8d4;
 
     /* Ghost AI design tokens → Tailwind utilities */
@@ -57,8 +57,8 @@
     --color-subtle:         #1e1e23;
     --color-copy-primary:   #f0f0f4;
     --color-copy-secondary: #c0c0cc;
-    --color-copy-muted:     #808090;
-    --color-copy-faint:     #505060;
+    --color-copy-muted:     #9a9aaa;
+    --color-copy-faint:     #636374;
     --color-brand:          #00c8d4;
     --color-brand-dim:      rgba(0, 200, 212, 0.12);
     --color-ai:             #6457f9;
@@ -66,8 +66,8 @@
     --color-state-error:    #ff4d4f;
     --color-state-success:  #34d399;
     --color-state-warning:  #fbbf24;
-    --color-border-default: #2a2a30;
-    --color-border-subtle:  #3a3a42;
+    --color-border-default: #313139;
+    --color-border-subtle:  #424252;
 }
 
 :root {
@@ -76,12 +76,12 @@
     --bg-surface: #111114;
     --bg-elevated: #18181c;
     --bg-subtle: #1e1e23;
-    --border-default: #2a2a30;
-    --border-subtle: #3a3a42;
+    --border-default: #313139;
+    --border-subtle: #424252;
     --text-primary: #f0f0f4;
     --text-secondary: #c0c0cc;
-    --text-muted: #808090;
-    --text-faint: #505060;
+    --text-muted: #9a9aaa;
+    --text-faint: #636374;
     --accent-primary: #00c8d4;
     --accent-primary-dim: rgba(0, 200, 212, 0.12);
     --accent-ai: #6457f9;
@@ -102,12 +102,12 @@
     --secondary: #1e1e23;
     --secondary-foreground: #c0c0cc;
     --muted: #18181c;
-    --muted-foreground: #808090;
+    --muted-foreground: #9a9aaa;
     --accent: rgba(0, 200, 212, 0.12);
     --accent-foreground: #00c8d4;
     --destructive: #ff4d4f;
-    --border: #2a2a30;
-    --input: #2a2a30;
+    --border: #313139;
+    --input: #313139;
     --ring: #00c8d4;
     --chart-1: #00c8d4;
     --chart-2: #6457f9;
@@ -121,7 +121,7 @@
     --sidebar-primary-foreground: #080809;
     --sidebar-accent: rgba(0, 200, 212, 0.12);
     --sidebar-accent-foreground: #00c8d4;
-    --sidebar-border: #2a2a30;
+    --sidebar-border: #313139;
     --sidebar-ring: #00c8d4;
 }
 
