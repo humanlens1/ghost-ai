@@ -1,7 +1,7 @@
 "use client"
 
 import { UserButton } from "@clerk/nextjs"
-import { Ghost, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Share2 } from "lucide-react"
+import { Ghost, LayoutTemplate, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Share2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -14,6 +14,7 @@ interface WorkspaceNavbarProps {
   onAiPanelToggle: () => void
   isOwner: boolean
   onShareOpen: () => void
+  onTemplatesOpen: () => void
   className?: string
 }
 
@@ -25,6 +26,7 @@ export function WorkspaceNavbar({
   onAiPanelToggle,
   isOwner,
   onShareOpen,
+  onTemplatesOpen,
   className,
 }: WorkspaceNavbarProps) {
   return (
@@ -65,6 +67,16 @@ export function WorkspaceNavbar({
 
       {/* Right: actions */}
       <div className="flex items-center gap-1.5">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onTemplatesOpen}
+          aria-label="Starter templates"
+          className="text-copy-muted hover:text-foreground"
+          title="Starter templates"
+        >
+          <LayoutTemplate className="h-4 w-4" />
+        </Button>
         {isOwner && (
           <Button
             size="sm"
