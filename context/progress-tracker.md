@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- 18-starter-templates (complete)
+- 21-canvas-autosave (complete)
 
 ## Current Goal
 
-- Starter template library with import modal and canvas replacement.
+- Canvas autosave to Vercel Blob with save status indicator.
 
 ## Completed
 
@@ -30,6 +30,10 @@ Update this file whenever the current phase, active feature, or implementation s
 - 16-edge-behavior: CanvasEdgeData interface (label?: string) added to types/canvas.ts; CanvasEdge updated to use it. CanvasEdgeComponent (components/editor/canvas-edge.tsx) — getSmoothStepPath for right-angle routing + midpoint coords; <g> with opacity 0.45→1 transition on hover/select; 20px-wide transparent hit-target path for easier clicking; BaseEdge (interactionWidth=0); EdgeLabelRenderer at getSmoothStepPath midpoint (labelX, labelY); double-click starts edit; auto-sizing input (ch units); saves on blur/Enter/Escape via onEdgesChange replace through FlowEdgesContext; pill badge for saved labels; faint hint when active+no label; nodrag nopan + stopPropagation to block canvas pan. CanvasNodeComponent gains 4 handles (top/right/bottom/left) with opacity 0→1 on node hover or select; small white dot style with dark border. FlowEdgesContext provided in CanvasEditor alongside FlowActionsContext. FlowCanvas custom handleConnect uses onEdgesChange add change to ensure type:"canvasEdge" on all new connections. defaultEdgeOptions sets type, markerEnd (ArrowClosed), and stroke style. edgeTypes map defined at module level. npm run build passes.
 - 17-canvas-ergonomics: ControlBar (pill-shaped, bottom-left Panel) added to canvas-wrapper.tsx — zoom out/fit view/zoom in wired to useReactFlow() with 200–300ms duration animation, undo/redo wired to useUndo/useRedo/useCanUndo/useCanRedo from @liveblocks/react with disabled+dimmed states. useKeyboardShortcuts hook (hooks/useKeyboardShortcuts.ts) receives flow + undo/redo, listens on window, ignores editable targets; supports +/= zoom in, - zoom out, Cmd/Ctrl+Z undo, Cmd/Ctrl+Shift+Z redo, Cmd/Ctrl+Y redo. npm run build passes.
 - 18-starter-templates: CanvasTemplate type + CANVAS_TEMPLATES array (microservices, CI/CD pipeline, event-driven) in components/editor/starter-templates.ts. TemplateImportContext (ref-based) exported from same file. StarterTemplatesModal (components/editor/starter-templates-modal.tsx) — Dialog with scrollable 1–3 column grid; each card shows SVG preview (pure-SVG, no React Flow; calculates bounds, scales to fit 220×120 viewport, draws edges as lines and nodes as colored shapes) + name + description + Import button. FlowCanvas (canvas-wrapper.tsx) consumes TemplateImportContext and populates the ref with a handler that replaces nodes+edges via onNodesChange/onEdgesChange and calls fitView after 50ms. WorkspaceShell provides context, owns isTemplatesOpen state, calls importRef.current on import. WorkspaceNavbar gains LayoutTemplate icon button (onTemplatesOpen prop). npm run build passes.
+- 19-presence-avatars-cursors: Presence type updated (isThinking → thinking). PresenceAvatarGroup component (React Flow Panel, top-right) — useOthers filtered by Clerk userId, overlapping avatar stack (up to 5 + +N overflow chip), ring-2 ring-white/20 on each avatar, divider only when collaborators exist, Clerk UserButton always shown. UserButton moved from WorkspaceNavbar to PresenceAvatarGroup so it lives inside the canvas. LiveCursors component — useOthers cursor positions converted via flowToScreenPosition, rendered as position:fixed divs (z-[60]), each with CursorArrow SVG + name badge colored by info.cursorColor. onMouseMove/onMouseLeave on ReactFlow update cursor presence via useUpdateMyPresence (screenToFlowPosition for coordinates, null on leave). npm run build passes.
+- 20-ai-sidebar-shell: AiSidebar (components/editor/ai-sidebar.tsx) — fixed floating panel (top-12 right-0 bottom-0 w-80, z-40), slide-in from right via translate-x-full → translate-x-0 transition (300ms ease). Header: Bot icon, "AI Workspace" title, "Collaborate with Ghost AI" subtitle, X close button. Tabbed layout via shadcn Tabs (AI Architect + Specs). AI Architect tab: scrollable chat area with empty state (Bot icon, description, 3 starter chips as rounded pills with bg-subtle/text-accent-foreground), user messages (right-aligned, bg-brand-dim, border-brand/50), no assistant messages (UI only), auto-sizing textarea input (min 72px, max 160px, field-sizing:content), Send button (bg-primary). Specs tab: Generate Spec button (bg-primary) + static demo spec card (bg-elevated, border, FileText icon, title, snippet, disabled Download button). WorkspaceShell replaces inline placeholder aside with AiSidebar; canvas now takes full width. npm run build passes.
+
+- 21-canvas-autosave: @vercel/blob installed. canvasJsonPath field on Project model reused as blob URL store (no migration needed). PUT /api/projects/[projectId]/canvas uploads canvas JSON to Vercel Blob + stores URL on Prisma project record. GET /api/projects/[projectId]/canvas reads blob URL from Prisma + fetches and returns canvas JSON. useAutosave hook (hooks/useAutosave.ts) — watches nodes/edges, debounces 1500ms, skips first render + disabled phase to avoid spurious saves on load, calls PUT canvas route, emits SaveStatus (idle/saving/saved/error). CanvasEditor loads saved canvas on mount when Liveblocks room is empty (nodes.length === 0 && edges.length === 0); if room already has data the load is skipped. CanvasWrapper gains projectId + onSaveStatusChange props. WorkspaceShell holds saveStatus state, passes onSaveStatusChange to CanvasWrapper and saveStatus to WorkspaceNavbar. WorkspaceNavbar shows "Saving…" / "Saved" / "Save failed" label inline next to project name (color-coded). npm run build passes.
 
 ## In Progress
 
@@ -37,7 +41,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- 19: Add the next planned feature unit here.
+- 22: Add the next planned feature unit here.
 
 ## Open Questions
 
@@ -68,8 +72,11 @@ Update this file whenever the current phase, active feature, or implementation s
 - Editor layout: `app/(editor)/layout.tsx` is async server component; fetches projects and passes to EditorShell as ownedProjects/sharedProjects props.
 - Access helpers: `lib/project-access.ts` — getAuthIdentity() (Clerk userId + primary email), checkProjectAccess(projectId, identity) (owner or collaborator check via Prisma).
 - AccessDenied component: `components/editor/access-denied.tsx` — centered lock icon, message, link back to /editor.
-- Workspace navbar: `components/editor/workspace-navbar.tsx` — shows project name, disabled Share button, AI panel toggle, UserButton.
-- Workspace shell: `components/editor/workspace-shell.tsx` — client, owns sidebar + AI panel state, renders WorkspaceNavbar + ProjectSidebar + canvas placeholder + AI sidebar placeholder.
+- Workspace navbar: `components/editor/workspace-navbar.tsx` — shows project name + save status label, Share button, AI panel toggle. Accepts saveStatus prop; renders color-coded "Saving…" / "Saved" / "Save failed" next to project name.
+- Workspace shell: `components/editor/workspace-shell.tsx` — client, owns sidebar + AI panel + saveStatus state; passes onSaveStatusChange to CanvasWrapper and saveStatus to WorkspaceNavbar.
+- AI sidebar: `components/editor/ai-sidebar.tsx` — floating fixed panel; isOpen/onClose props; tabbed AI Architect (empty state, chips, chat, input) + Specs (generate button, demo card) UI.
+- Autosave hook: `hooks/useAutosave.ts` — useAutosave({ projectId, nodes, edges, onStatusChange, enabled }); 1500ms debounce; emits SaveStatus (idle/saving/saved/error).
+- Canvas API: `app/api/projects/[projectId]/canvas/route.ts` — PUT uploads JSON to Vercel Blob + stores URL in Prisma canvasJsonPath; GET reads canvasJsonPath and fetches from blob.
 - Workspace page: `app/(workspace)/editor/[roomId]/page.tsx` — server component; redirects unauth to /sign-in, shows AccessDenied for missing/unauthorized projects, renders WorkspaceShell with project + projects + activeProjectId + isOwner.
 - ProjectSidebar: added optional activeProjectId prop; matching project item gets bg-muted/70 highlight.
 - Share dialog: `components/editor/share-dialog.tsx` — Dialog for sharing; owners see invite input + remove buttons; collaborators see read-only list; copy-link with "Copied!" feedback.
@@ -84,3 +91,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Canvas node: `components/editor/canvas-node.tsx` — exports ShapeRenderer, CanvasNodeComponent, and FlowActionsContext. NodeResizer (isVisible=selected). Inline label editing: double-click → textarea overlay, commit on blur/Escape via onNodesChange replace change. getNode(id) from useReactFlow for current node state. NodeColorToolbar (floating pill) + SwatchButton (16px circles) shown when selected; swatch click dispatches replace change for color+textColor. NODE_COLORS palette in types/canvas.ts. 4 handles (top/right/bottom/left) with hover+selected-gated opacity fade-in; small white dot style.
 - Canvas edge: `components/editor/canvas-edge.tsx` — exports CanvasEdgeComponent and FlowEdgesContext. getSmoothStepPath routing; opacity-based hover/select brightening via <g> wrapper; 20px transparent hit path; BaseEdge; EdgeLabelRenderer at midpoint; inline label editing with auto-sizing input; pill badge for saved labels; faint hint when active+no label; nodrag nopan classes + stopPropagation.
 - Shape panel: `components/editor/shape-panel.tsx` — ShapePanel + ShapeDragPayload; draggable buttons for 6 shapes; drag preview via createPortal (ShapeRenderer at cursor, 65% opacity, rAF-throttled position tracking, native drag image suppressed).
+- Presence avatar group: inside `components/editor/canvas-wrapper.tsx` as PresenceAvatarGroup — React Flow Panel top-right; useOthers filtered against Clerk userId; overlapping CollaboratorAvatar stack (w-7 h-7, ring-2 ring-white/20, photo or initials); +N overflow chip; divider only when collaborators present; Clerk UserButton always shown.
+- Live cursors: LiveCursors component in canvas-wrapper.tsx — reads useOthers cursor presence, converts via flowToScreenPosition to fixed viewport coords, renders CursorArrow SVG + name badge per participant.
+- Cursor broadcast: onMouseMove on ReactFlow calls useUpdateMyPresence({ cursor: screenToFlowPosition(e.clientX, e.clientY) }); onMouseLeave sets cursor: null.
+- Presence type: liveblocks.config.ts Presence field renamed isThinking → thinking; RoomProvider initialPresence updated accordingly.

@@ -2,7 +2,7 @@ declare global {
   interface Liveblocks {
     Presence: {
       cursor: { x: number; y: number } | null;
-      isThinking: boolean;
+      thinking: boolean;
     };
 
     Storage: {};
@@ -16,7 +16,7 @@ declare global {
       };
     };
 
-    RoomEvent: {};
+    RoomEvent: { type: "KICKED"; userId: string };
 
     ThreadMetadata: {};
 

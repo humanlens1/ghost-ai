@@ -1,13 +1,16 @@
 "use client"
 
-import { UserButton } from "@clerk/nextjs"
+import { useEffect, useState } from "react"
 import { Ghost, LayoutTemplate, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Share2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import type { SaveStatus } from "@/hooks/useAutosave"
 
 interface WorkspaceNavbarProps {
   projectName: string
+  saveStatus: SaveStatus
+  onSave?: () => void
   isSidebarOpen: boolean
   onSidebarToggle: () => void
   isAiPanelOpen: boolean
@@ -18,8 +21,24 @@ interface WorkspaceNavbarProps {
   className?: string
 }
 
+const buttonLabel: Record<SaveStatus, string> = {
+  idle: "Save",
+  saving: "Saving…",
+  saved: "Saved",
+  error: "Error",
+}
+
+const buttonColor: Record<SaveStatus, string> = {
+  idle: "",
+  saving: "text-copy-muted",
+  saved: "text-green-400",
+  error: "text-red-400",
+}
+
 export function WorkspaceNavbar({
   projectName,
+  saveStatus,
+  onSave,
   isSidebarOpen,
   onSidebarToggle,
   isAiPanelOpen,
@@ -29,6 +48,22 @@ export function WorkspaceNavbar({
   onTemplatesOpen,
   className,
 }: WorkspaceNavbarProps) {
+  // Transient display status: "saved" and "error" reset to "idle" after 2 s
+  const [displayStatus, setDisplayStatus] = useState<SaveStatus>("idle")
+
+  useEffect(() => {
+    if (saveStatus === "saving") {
+      setDisplayStatus("saving")
+      return
+    }
+    if (saveStatus === "saved" || saveStatus === "error") {
+      setDisplayStatus(saveStatus)
+      const timer = setTimeout(() => setDisplayStatus("idle"), 2000)
+      return () => clearTimeout(timer)
+    }
+    setDisplayStatus("idle")
+  }, [saveStatus])
+
   return (
     <header
       className={cn(
@@ -77,6 +112,17 @@ export function WorkspaceNavbar({
         >
           <LayoutTemplate className="h-4 w-4" />
         </Button>
+        {onSave && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onSave}
+            disabled={displayStatus === "saving"}
+            className={cn("min-w-14 text-xs", buttonColor[displayStatus])}
+          >
+            {buttonLabel[displayStatus]}
+          </Button>
+        )}
         {isOwner && (
           <Button
             size="sm"
@@ -98,7 +144,6 @@ export function WorkspaceNavbar({
         >
           {isAiPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}
         </Button>
-        <UserButton />
       </div>
     </header>
   )

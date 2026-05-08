@@ -225,11 +225,11 @@ export function CanvasNodeComponent({ id, data, selected }: NodeProps<CanvasNode
         </div>
       ) : (
         <div
-          className={`absolute inset-0 flex cursor-text items-center justify-center text-sm ${SVG_SHAPES.has(shape) ? "px-2" : "px-3"}`}
+          className={`absolute inset-0 flex items-center justify-center text-sm ${SVG_SHAPES.has(shape) ? "px-2" : "px-3"}`}
           onDoubleClick={handleDoubleClick}
         >
           <span
-            className="truncate"
+            className="truncate cursor-text"
             style={{ color: data.label ? textColor : "var(--color-copy-muted)" }}
           >
             {data.label || "Label"}
