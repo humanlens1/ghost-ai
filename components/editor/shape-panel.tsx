@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type DragEvent as ReactDragEvent } from "react";
 import { createPortal } from "react-dom";
 import { Circle, Cylinder, Diamond, Hexagon, Pill, RectangleHorizontal } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -29,6 +29,9 @@ const SHAPES: { shape: string; icon: LucideIcon; width: number; height: number; 
 export function ShapePanel() {
   const [isDragging, setIsDragging] = useState(false);
   const [preview, setPreview] = useState<DragPreview | null>(null);
+  // Counter-based enter/leave tracking to handle nested child elements correctly
+  const toolbarEnterCount = useRef(0);
+  const [overToolbar, setOverToolbar] = useState(false);
 
   useEffect(() => {
     if (!isDragging) return;
@@ -48,7 +51,7 @@ export function ShapePanel() {
     };
   }, [isDragging]);
 
-  function handleDragStart(e: React.DragEvent, config: (typeof SHAPES)[number]) {
+  function handleDragStart(e: ReactDragEvent, config: (typeof SHAPES)[number]) {
     const payload: ShapeDragPayload = {
       shape: config.shape,
       width: config.width,
@@ -70,11 +73,42 @@ export function ShapePanel() {
   function handleDragEnd() {
     setIsDragging(false);
     setPreview(null);
+    toolbarEnterCount.current = 0;
+    setOverToolbar(false);
+  }
+
+  function handleToolbarDragEnter() {
+    toolbarEnterCount.current += 1;
+    setOverToolbar(true);
+  }
+
+  function handleToolbarDragLeave() {
+    toolbarEnterCount.current -= 1;
+    if (toolbarEnterCount.current <= 0) {
+      toolbarEnterCount.current = 0;
+      setOverToolbar(false);
+    }
+  }
+
+  function handleToolbarDragOver(e: ReactDragEvent) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "none";
+  }
+
+  function handleToolbarDrop(e: ReactDragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   return (
     <>
-      <div className="flex items-center gap-1 rounded-full border border-border bg-elevated px-3 py-2 shadow-lg">
+      <div
+        className="flex items-center gap-1 rounded-full border border-border bg-elevated px-3 py-2 shadow-lg"
+        onDragEnter={handleToolbarDragEnter}
+        onDragLeave={handleToolbarDragLeave}
+        onDragOver={handleToolbarDragOver}
+        onDrop={handleToolbarDrop}
+      >
         {SHAPES.map((config) => {
           const Icon = config.icon;
           return (
@@ -91,7 +125,7 @@ export function ShapePanel() {
           );
         })}
       </div>
-      {preview &&
+      {preview && !overToolbar &&
         createPortal(
           <div
             style={{

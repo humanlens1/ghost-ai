@@ -14,8 +14,10 @@ import {
 } from "./project-dialogs"
 import { ShareDialog } from "./share-dialog"
 import { CanvasWrapper } from "./canvas-wrapper"
+import { AiSidebar } from "./ai-sidebar"
 import { StarterTemplatesModal } from "./starter-templates-modal"
 import { TemplateImportContext, type CanvasTemplate, type ImportFn } from "./starter-templates"
+import type { SaveStatus } from "@/hooks/useAutosave"
 
 interface WorkspaceShellProps {
   project: { id: string; name: string }
@@ -29,7 +31,9 @@ export function WorkspaceShell({ project, projects, activeProjectId, isOwner }: 
   const [isAiPanelOpen, setIsAiPanelOpen] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle")
   const importRef = useRef<ImportFn | null>(null)
+  const triggerSaveRef = useRef<(() => void) | null>(null)
   const actions = useProjectActions()
 
   function handleImport(template: CanvasTemplate) {
@@ -48,6 +52,8 @@ export function WorkspaceShell({ project, projects, activeProjectId, isOwner }: 
     >
       <WorkspaceNavbar
         projectName={project.name}
+        saveStatus={saveStatus}
+        onSave={() => triggerSaveRef.current?.()}
         isSidebarOpen={isSidebarOpen}
         onSidebarToggle={() => setIsSidebarOpen((prev) => !prev)}
         isAiPanelOpen={isAiPanelOpen}
@@ -68,23 +74,21 @@ export function WorkspaceShell({ project, projects, activeProjectId, isOwner }: 
       />
 
       <div className="flex h-screen pt-12">
-        {/* Canvas area */}
         <main className="relative flex-1 overflow-hidden">
-          <CanvasWrapper roomId={activeProjectId} />
+          <CanvasWrapper
+            roomId={activeProjectId}
+            projectId={project.id}
+            isOwner={isOwner}
+            onSaveStatusChange={setSaveStatus}
+            triggerSaveRef={triggerSaveRef}
+          />
         </main>
-
-        {/* AI sidebar placeholder */}
-        {isAiPanelOpen && (
-          <aside className="flex w-80 shrink-0 flex-col border-l border-border bg-elevated">
-            <div className="flex h-12 items-center justify-between border-b border-border px-4">
-              <span className="text-sm font-semibold text-foreground">AI Assistant</span>
-            </div>
-            <div className="flex flex-1 items-center justify-center">
-              <p className="text-sm text-copy-muted">AI chat coming soon</p>
-            </div>
-          </aside>
-        )}
       </div>
+
+      <AiSidebar
+        isOpen={isAiPanelOpen}
+        onClose={() => setIsAiPanelOpen(false)}
+      />
 
       <CreateProjectDialog
         open={actions.dialog === "create"}

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"RouteContext\" \"/mnt/c/Users/JoshK/OneDrive/Desktop/Ghost-ai/node_modules/next/\" --include=\"*.d.ts\" 2>/dev/null | head -20)",
+      "Read(//mnt/c/Users/JoshK/OneDrive/Desktop/Ghost-ai/node_modules/**)",
+      "Bash(ls \"/mnt/c/Users/JoshK/OneDrive/Desktop/Ghost-ai\"/*.ts \"/mnt/c/Users/JoshK/OneDrive/Desktop/Ghost-ai\"/*.d.ts 2>/dev/null)",
+      "Read(//mnt/c/Users/JoshK/OneDrive/Desktop/**)",
+      "Bash(Get-Content \"c:\\\\Users\\\\JoshK\\\\OneDrive\\\\Desktop\\\\Ghost-ai\\\\.env.local\")",
+      "Bash(Select-String \"BLOB\")",
+      "Bash(Get-ChildItem -Recurse \"c:\\\\Users\\\\JoshK\\\\OneDrive\\\\Desktop\\\\Ghost-ai\\\\app\\\\api\\\\projects\")",
+      "Bash(Select-Object FullName)",
+      "Bash(xargs grep -l \"canvasJsonPath\")"
+    ]
+  }
+}
